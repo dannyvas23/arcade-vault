@@ -10,15 +10,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The project follows **Spec Driven Design** using the `/spec` and `/spec-impl` skills from `Klerith/fernando-skills` (installed with `npx skills@latest add Klerith/fernando-skills`). The sibling `../juego_arkanoid/` project shows the intended workflow: numbered spec files in `specs/` (e.g. `03-pelota-y-colisiones.md`), committed first ("Agregar especificación NN: ...") and then implemented in a separate commit ("Implementar spec NN: ..."). Conversation and commit messages are in Spanish.
 
-## Commands
+## Skill
 
-```bash
-npm run dev      # next dev (Turbopack)
-npm run build    # next build
-npm run start    # serve the production build
-npm run lint     # eslint (flat config, next core-web-vitals + typescript)
-npx tsc --noEmit # typecheck (no test runner is configured)
-```
+Usa siempre /frontend-desing para diseñar la interfaz de usuario
 
 There is no test framework installed, so there is no single-test command yet.
 

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import GameCover from "@/components/game-cover";
@@ -10,9 +11,22 @@ export function generateStaticParams() {
   return GAMES.map((g) => ({ id: g.id }));
 }
 
-export default async function GameDetailPage({
+// La página no espera `params`: lo lee un componente interno dentro de
+// <Suspense>, para que ids no listados en generateStaticParams (p. ej.
+// /juegos/no-existe) no bloqueen el shell estático.
+export default function GameDetailPage({ params }: PageProps<"/juegos/[id]">) {
+  return (
+    <Suspense fallback={null}>
+      <GameDetail params={params} />
+    </Suspense>
+  );
+}
+
+async function GameDetail({
   params,
-}: PageProps<"/juegos/[id]">) {
+}: {
+  params: PageProps<"/juegos/[id]">["params"];
+}) {
   const { id } = await params;
   const game = getGame(id);
   if (!game) notFound();

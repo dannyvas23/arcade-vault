@@ -19,7 +19,7 @@ export default function NotFound() {
         Esta página no existe en el Vault. Vuelve a la biblioteca y elige otro
         juego.
       </p>
-      <Link href="/" className="btn lg">
+      <Link href="/juegos" className="btn lg">
         VOLVER AL VAULT
       </Link>
     </div>

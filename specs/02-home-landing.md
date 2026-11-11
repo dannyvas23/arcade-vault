@@ -115,40 +115,40 @@ Cada paso deja el proyecto compilando y es commiteable por sí solo. Antes de ca
 
 **Rutas y proyecto**
 
-- [ ] `/`, `/juegos`, `/juegos/serpentina`, `/juegos/serpentina/jugar` y `/salon` responden 200 y renderizan su pantalla.
-- [ ] `/acerca` y `/auth` responden 404.
-- [ ] `/juegos` muestra la Biblioteca con 8 tarjetas y sus filtros funcionan igual que antes (ARCADE 4, PUZZLE 1, SHOOTER 2, VERSUS 1, TODOS 8).
-- [ ] `/` ya no muestra la Biblioteca (no hay buscador ni chips de categoría).
+- [x] `/`, `/juegos`, `/juegos/serpentina`, `/juegos/serpentina/jugar` y `/salon` responden 200 y renderizan su pantalla.
+- [x] `/acerca` y `/auth` responden 404.
+- [x] `/juegos` muestra la Biblioteca con 8 tarjetas y sus filtros funcionan igual que antes (ARCADE 4, PUZZLE 1, SHOOTER 2, VERSUS 1, TODOS 8).
+- [x] `/` ya no muestra la Biblioteca (no hay buscador ni chips de categoría).
 - [ ] `npm run lint`, `npx tsc --noEmit` y `npm run build` terminan sin errores.
-- [ ] La consola del navegador no muestra errores ni avisos de hidratación en `/`.
-- [ ] En un viewport de 375 px de ancho `/` no tiene scroll horizontal.
-- [ ] No hay referencias a React por CDN, Babel ni `<link>` a Google Fonts.
+- [x] La consola del navegador no muestra errores ni avisos de hidratación en `/`.
+- [x] En un viewport de 375 px de ancho `/` no tiene scroll horizontal.
+- [x] No hay referencias a React por CDN, Babel ni `<link>` a Google Fonts.
 
 **Nav y enlaces**
 
-- [ ] El Nav muestra, en este orden, «Inicio», «Biblioteca», «Salón de la Fama» y «Acerca de»; el panel móvil muestra los mismos 4 enlaces.
-- [ ] «Inicio» está activo en `/` y no lo está en ninguna otra ruta.
-- [ ] «Biblioteca» está activo en `/juegos`, `/juegos/serpentina` y `/juegos/serpentina/jugar`, y no en `/`.
-- [ ] «Salón de la Fama» está activo en `/salon`.
-- [ ] El logo del Nav navega a `/`.
-- [ ] Pulsar «Acerca de» lleva a `/acerca` (404).
-- [ ] El Nav y el panel móvil no contienen «Iniciar Sesión», «Cuenta» ni nombre de usuario.
-- [ ] «VOLVER AL VAULT» (Detalle, modal del Reproductor y página 404) y «VOLVER A LA BIBLIOTECA» (Salón) navegan a `/juegos`.
+- [x] El Nav muestra, en este orden, «Inicio», «Biblioteca», «Salón de la Fama» y «Acerca de»; el panel móvil muestra los mismos 4 enlaces.
+- [x] «Inicio» está activo en `/` y no lo está en ninguna otra ruta.
+- [x] «Biblioteca» está activo en `/juegos`, `/juegos/serpentina` y `/juegos/serpentina/jugar`, y no en `/`.
+- [x] «Salón de la Fama» está activo en `/salon`.
+- [x] El logo del Nav navega a `/`.
+- [x] Pulsar «Acerca de» lleva a `/acerca` (404).
+- [x] El Nav y el panel móvil no contienen «Iniciar Sesión», «Cuenta» ni nombre de usuario.
+- [x] «VOLVER AL VAULT» (Detalle, modal del Reproductor y página 404) y «VOLVER A LA BIBLIOTECA» (Salón) navegan a `/juegos`.
 
 **Hero**
 
 - [ ] Se ve la línea «▸ INSERTAR UNA MONEDA_», el título en 3 líneas («EL ARCADE», «CLÁSICO ESTÁ», «DE VUELTA») y el subtítulo de 2 líneas.
-- [ ] Hay 8 siluetas decorativas, ocultas a lectores de pantalla (`aria-hidden`).
-- [ ] «▶ EXPLORAR JUEGOS» navega a `/juegos`.
-- [ ] «✦ CREAR CUENTA» apunta a `/auth`.
-- [ ] El indicador «DESLIZA ▼» es visible.
+- [x] Hay 8 siluetas decorativas, ocultas a lectores de pantalla (`aria-hidden`).
+- [x] «▶ EXPLORAR JUEGOS» navega a `/juegos`.
+- [x] «✦ CREAR CUENTA» apunta a `/auth`.
+- [x] El indicador «DESLIZA ▼» es visible.
 
 **Secciones**
 
-- [ ] «// 01 ¿POR QUÉ ARCADE VAULT?» muestra 4 tarjetas: JUEGOS CLÁSICOS, 100% GRATIS, LADDER BOARDS y SIEMPRE CRECIENDO, cada una con su icono y color.
-- [ ] «// 02 JUEGOS DISPONIBLES AHORA» muestra 6 mini-tarjetas, que son los 6 primeros juegos de `GAMES`, con portada, título y categoría.
-- [ ] Pulsar una mini-tarjeta navega a `/juegos/[id]` de ese juego, y se alcanza con Tab y se activa con Enter.
-- [ ] «VER TODOS LOS JUEGOS →» navega a `/juegos`.
+- [x] «// 01 ¿POR QUÉ ARCADE VAULT?» muestra 4 tarjetas: JUEGOS CLÁSICOS, 100% GRATIS, LADDER BOARDS y SIEMPRE CRECIENDO, cada una con su icono y color.
+- [x] «// 02 JUEGOS DISPONIBLES AHORA» muestra 6 mini-tarjetas, que son los 6 primeros juegos de `GAMES`, con portada, título y categoría.
+- [x] Pulsar una mini-tarjeta navega a `/juegos/[id]` de ese juego, y se alcanza con Tab y se activa con Enter.
+- [x] «VER TODOS LOS JUEGOS →» navega a `/juegos`.
 - [ ] La franja de estadísticas muestra «12+ JUEGOS», «MILES DE PARTIDAS» y «GLOBAL RANKING» con sus subtítulos.
 - [ ] «// 03 ACTIVIDAD EN VIVO» muestra 7 filas de «ÚLTIMAS PUNTUACIONES» con jugador, juego, `+puntuación` formateada (p. ej. `+184.220`) y tiempo.
 - [ ] «TOP JUGADORES · HOY» muestra 5 filas con rango `#01`…`#05`; las 3 primeras llevan las clases `top1`, `top2` y `top3`.
@@ -159,10 +159,10 @@ Cada paso deja el proyecto compilando y es commiteable por sí solo. Antes de ca
 
 **Animación y responsive**
 
-- [ ] Las secciones con `.reveal` que están fuera del viewport al cargar no tienen la clase `in` y la reciben al entrar en pantalla.
-- [ ] Una sección ya visible al cargar recibe `in` sin necesidad de hacer scroll.
-- [ ] Por debajo de 980 px las características pasan a 2 columnas y por debajo de 520 px a 1.
-- [ ] Por debajo de 1100 px las mini-tarjetas pasan a 3 columnas y por debajo de 600 px a 2.
+- [x] Las secciones con `.reveal` que están fuera del viewport al cargar no tienen la clase `in` y la reciben al entrar en pantalla.
+- [x] Una sección ya visible al cargar recibe `in` sin necesidad de hacer scroll.
+- [x] Por debajo de 980 px las características pasan a 2 columnas y por debajo de 520 px a 1.
+- [x] Por debajo de 1100 px las mini-tarjetas pasan a 3 columnas y por debajo de 600 px a 2.
 - [ ] Por debajo de 900 px «Actividad» y «Precios» pasan a 1 columna; por debajo de 720 px las estadísticas pasan a 1 columna.
 
 ## Decisiones tomadas y descartadas

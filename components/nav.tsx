@@ -4,15 +4,21 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type Section = "biblioteca" | "salon";
+type Section = "inicio" | "biblioteca" | "salon" | "acerca";
 
 // «Biblioteca» está activa también en el detalle y el reproductor de un juego.
 function isActive(section: Section, pathname: string | null): boolean {
   if (pathname === null) return false;
-  if (section === "biblioteca") {
-    return pathname === "/" || pathname.startsWith("/juegos");
+  switch (section) {
+    case "inicio":
+      return pathname === "/";
+    case "biblioteca":
+      return pathname.startsWith("/juegos");
+    case "salon":
+      return pathname.startsWith("/salon");
+    case "acerca":
+      return pathname.startsWith("/acerca");
   }
-  return pathname.startsWith("/salon");
 }
 
 function NavView({ pathname }: { pathname: string | null }) {
@@ -20,8 +26,10 @@ function NavView({ pathname }: { pathname: string | null }) {
   const close = () => setOpen(false);
 
   const links: { section: Section; href: string; label: string }[] = [
-    { section: "biblioteca", href: "/", label: "Biblioteca" },
+    { section: "inicio", href: "/", label: "Inicio" },
+    { section: "biblioteca", href: "/juegos", label: "Biblioteca" },
     { section: "salon", href: "/salon", label: "Salón de la Fama" },
+    { section: "acerca", href: "/acerca", label: "Acerca de" },
   ];
 
   return (

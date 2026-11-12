@@ -122,61 +122,61 @@ Cada paso deja el proyecto compilando y es commiteable por sí solo. Antes de ca
 
 **Rutas y proyecto**
 
-- [ ] `/`, `/juegos/serpentina`, `/juegos/serpentina/jugar` y `/salon` responden 200 y renderizan su pantalla.
-- [ ] `/juegos/no-existe` y `/juegos/no-existe/jugar` muestran la página 404.
-- [ ] `/auth` responde 404 (la ruta no existe en esta spec).
+- [x] `/`, `/juegos/serpentina`, `/juegos/serpentina/jugar` y `/salon` responden 200 y renderizan su pantalla.
+- [x] `/juegos/no-existe` y `/juegos/no-existe/jugar` muestran la página 404.
+- [x] `/auth` responde 404 (la ruta no existe en esta spec).
 - [ ] `npm run lint`, `npx tsc --noEmit` y `npm run build` terminan sin errores.
-- [ ] La consola del navegador no muestra errores ni avisos de hidratación en ninguna de las 4 pantallas.
-- [ ] No hay referencias a React por CDN, Babel ni `<link>` a Google Fonts: las fuentes siguen cargándose con `next/font`.
+- [x] La consola del navegador no muestra errores ni avisos de hidratación en ninguna de las 4 pantallas.
+- [x] No hay referencias a React por CDN, Babel ni `<link>` a Google Fonts: las fuentes siguen cargándose con `next/font`.
 - [ ] En un viewport de 375 px de ancho ninguna de las 4 pantallas tiene scroll horizontal.
 
 **Nav y footer**
 
 - [ ] «Biblioteca» aparece activo en `/`, `/juegos/[id]` y `/juegos/[id]/jugar`; «Salón de la Fama» aparece activo en `/salon`.
-- [ ] El Nav y el menú móvil no contienen ningún botón ni enlace de «Iniciar Sesión», «Cuenta» ni nombre de usuario.
-- [ ] Por debajo de 840 px se ocultan los enlaces y el contador, y el botón `≡` abre el panel lateral.
-- [ ] Pulsar un enlace del panel o el backdrop cierra el panel; el enlace además navega a su ruta.
-- [ ] El footer muestra «© 2026 ARCADE VAULT · HECHO CON PIXELES Y NEÓN · v2.6.0» en todas las pantallas.
+- [x] El Nav y el menú móvil no contienen ningún botón ni enlace de «Iniciar Sesión», «Cuenta» ni nombre de usuario.
+- [x] Por debajo de 840 px se ocultan los enlaces y el contador, y el botón `≡` abre el panel lateral.
+- [x] Pulsar un enlace del panel o el backdrop cierra el panel; el enlace además navega a su ruta.
+- [x] El footer muestra «© 2026 ARCADE VAULT · HECHO CON PIXELES Y NEÓN · v2.6.0» en todas las pantallas.
 
 **Biblioteca**
 
-- [ ] Se muestran 8 tarjetas con portada, categoría, título, descripción y «MEJOR PUNTUACIÓN».
-- [ ] El chip «ARCADE» muestra 4 tarjetas, «PUZZLE» 1, «SHOOTER» 2, «VERSUS» 1 y «TODOS» 8.
-- [ ] Buscar «serp» (sin distinguir mayúsculas) deja solo SERPENTINA; buscar «zzz» muestra «NO HAY RESULTADOS».
-- [ ] Búsqueda y categoría se combinan (p. ej. «ARCADE» + «gl» deja solo GLOTÓN).
-- [ ] Pulsar la tarjeta o su botón JUGAR navega a `/juegos/[id]` una sola vez.
-- [ ] La tarjeta es alcanzable con la tecla Tab y se activa con Enter.
+- [x] Se muestran 8 tarjetas con portada, categoría, título, descripción y «MEJOR PUNTUACIÓN».
+- [x] El chip «ARCADE» muestra 4 tarjetas, «PUZZLE» 1, «SHOOTER» 2, «VERSUS» 1 y «TODOS» 8.
+- [x] Buscar «serp» (sin distinguir mayúsculas) deja solo SERPENTINA; buscar «zzz» muestra «NO HAY RESULTADOS».
+- [x] Búsqueda y categoría se combinan (p. ej. «ARCADE» + «gl» deja solo GLOTÓN).
+- [x] Pulsar la tarjeta o su botón JUGAR navega a `/juegos/[id]` una sola vez.
+- [x] La tarjeta es alcanzable con la tecla Tab y se activa con Enter.
 
 **Detalle**
 
-- [ ] Muestra portada, 4 etiquetas (categoría, «1 JUGADOR», «TECLADO / TÁCTIL», «RETRO 1985»), título, descripción larga y la franja «Partidas / Mejor global / Dificultad».
-- [ ] La tabla «MEJORES PUNTUACIONES» tiene 10 filas ordenadas de mayor a menor, con las 3 primeras en dorado, plata y bronce.
-- [ ] Recargar la página no cambia ningún valor del ranking.
-- [ ] CAÍDA y ROCAS muestran rankings distintos.
+- [x] Muestra portada, 4 etiquetas (categoría, «1 JUGADOR», «TECLADO / TÁCTIL», «RETRO 1985»), título, descripción larga y la franja «Partidas / Mejor global / Dificultad».
+- [x] La tabla «MEJORES PUNTUACIONES» tiene 10 filas ordenadas de mayor a menor, con las 3 primeras en dorado, plata y bronce.
+- [x] Recargar la página no cambia ningún valor del ranking.
+- [x] CAÍDA y ROCAS muestran rankings distintos.
 - [ ] «JUGAR AHORA» navega a `/juegos/[id]/jugar` y «VOLVER AL VAULT» a `/`.
 
 **Reproductor**
 
-- [ ] El HUD muestra Jugador (inicialmente «INVITADO»), Puntuación, Vidas (♥ ♥ ♥) y Nivel con dos dígitos.
-- [ ] La puntuación sube sola mientras el juego no está en pausa ni terminado.
-- [ ] «PAUSA» detiene la puntuación, muestra la capa «EN PAUSA» y cambia el botón a «REANUDAR»; reanudar la hace subir de nuevo.
-- [ ] El Nivel es `1 + floor(puntuación / 2500)`.
-- [ ] «FIN» abre el modal «FIN DEL JUEGO» con la puntuación final y detiene el contador.
-- [ ] El campo de iniciales parte con «INVITADO», convierte a mayúsculas y limita a 10 caracteres.
-- [ ] «GUARDAR PUNTUACIÓN» añade a `av:v1:scores` una entrada `{ gameId, name, score, at }` y muestra «PUNTUACIÓN GUARDADA».
-- [ ] «JUGAR DE NUEVO» cierra el modal y reinicia puntuación y nivel a 0 y 1.
+- [x] El HUD muestra Jugador (inicialmente «INVITADO»), Puntuación, Vidas (♥ ♥ ♥) y Nivel con dos dígitos.
+- [x] La puntuación sube sola mientras el juego no está en pausa ni terminado.
+- [x] «PAUSA» detiene la puntuación, muestra la capa «EN PAUSA» y cambia el botón a «REANUDAR»; reanudar la hace subir de nuevo.
+- [x] El Nivel es `1 + floor(puntuación / 2500)`.
+- [x] «FIN» abre el modal «FIN DEL JUEGO» con la puntuación final y detiene el contador.
+- [x] El campo de iniciales parte con «INVITADO», convierte a mayúsculas y limita a 10 caracteres.
+- [x] «GUARDAR PUNTUACIÓN» añade a `av:v1:scores` una entrada `{ gameId, name, score, at }` y muestra «PUNTUACIÓN GUARDADA».
+- [x] «JUGAR DE NUEVO» cierra el modal y reinicia puntuación y nivel a 0 y 1.
 - [ ] «SALIR» navega a `/juegos/[id]` y «VOLVER AL VAULT» (en el modal) a `/`.
 
 **Salón de la Fama**
 
-- [ ] Hay 8 pestañas, una por juego, con el primer juego seleccionado al entrar.
-- [ ] Cambiar de pestaña cambia el podio y la tabla.
-- [ ] El podio muestra los puestos 1, 2 y 3 (el 1 marcado como «CAMPEÓN») y la tabla muestra 12 filas.
-- [ ] La fila «TU MEJOR MARCA» aparece siempre, sin necesidad de sesión.
-- [ ] Sin puntuaciones guardadas para ese juego, la fila «TU MEJOR MARCA» muestra «—» en rango, nombre, puntuación y fecha.
-- [ ] Tras guardar en SERPENTINA una puntuación de 999999, la fila de ese juego en el Salón muestra `#01`, el nombre con el que se guardó, `999.999` y la fecha del guardado.
-- [ ] Una puntuación guardada en otro juego no aparece en la fila «TU MEJOR MARCA» de SERPENTINA.
-- [ ] Si hay varias puntuaciones guardadas para un juego, la fila muestra la mayor.
+- [x] Hay 8 pestañas, una por juego, con el primer juego seleccionado al entrar.
+- [x] Cambiar de pestaña cambia el podio y la tabla.
+- [x] El podio muestra los puestos 1, 2 y 3 (el 1 marcado como «CAMPEÓN») y la tabla muestra 12 filas.
+- [x] La fila «TU MEJOR MARCA» aparece siempre, sin necesidad de sesión.
+- [x] Sin puntuaciones guardadas para ese juego, la fila «TU MEJOR MARCA» muestra «—» en rango, nombre, puntuación y fecha.
+- [x] Tras guardar en SERPENTINA una puntuación de 999999, la fila de ese juego en el Salón muestra `#01`, el nombre con el que se guardó, `999.999` y la fecha del guardado.
+- [x] Una puntuación guardada en otro juego no aparece en la fila «TU MEJOR MARCA» de SERPENTINA.
+- [x] Si hay varias puntuaciones guardadas para un juego, la fila muestra la mayor.
 - [ ] «VOLVER A LA BIBLIOTECA» navega a `/`.
 
 ## Decisiones tomadas y descartadas

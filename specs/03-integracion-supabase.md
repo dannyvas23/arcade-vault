@@ -1,6 +1,6 @@
 # SPEC 03 — Integración de Supabase
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (modifica `app/layout.tsx`, donde ya vive `ScoresProvider`)
 > **Fecha:** 2026-11-15
 > **Objetivo:** Integrar Supabase en la app Next.js instalando sus librerías, configurando la conexión por variables de entorno y exponiendo el cliente mediante un contexto de React, sin implementar ninguna funcionalidad de la aplicación.

@@ -3,6 +3,7 @@ import { Courier_Prime, JetBrains_Mono, Press_Start_2P } from "next/font/google"
 import Footer from "@/components/footer";
 import Nav from "@/components/nav";
 import { ScoresProvider } from "@/components/scores-provider";
+import { SupabaseProvider } from "@/components/supabase-provider";
 import "./globals.css";
 
 const pressStart = Press_Start_2P({
@@ -42,11 +43,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="av-bg" />
         <div className="av-noise" />
         <div id="root">
-          <ScoresProvider>
-            <Nav />
-            <main className="av-main">{children}</main>
-            <Footer />
-          </ScoresProvider>
+          <SupabaseProvider>
+            <ScoresProvider>
+              <Nav />
+              <main className="av-main">{children}</main>
+              <Footer />
+            </ScoresProvider>
+          </SupabaseProvider>
         </div>
       </body>
     </html>

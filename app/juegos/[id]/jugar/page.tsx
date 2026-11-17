@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import GamePlayer from "@/components/game-player";
-import { GAMES, getGame } from "@/lib/games";
+import { getGame, getGames } from "@/lib/data/games";
 
-// Los 8 ids se conocen en build: `params` se resuelve en el prerender.
-export function generateStaticParams() {
-  return GAMES.map((g) => ({ id: g.id }));
+// Los ids (slugs) se leen de la BD en build: `params` se resuelve en el prerender.
+export async function generateStaticParams() {
+  const games = await getGames();
+  return games.map((g) => ({ id: g.id }));
 }
 
 // La página no espera `params`: lo lee un componente interno dentro de
@@ -25,7 +26,7 @@ async function Player({
   params: PageProps<"/juegos/[id]/jugar">["params"];
 }) {
   const { id } = await params;
-  const game = getGame(id);
+  const game = await getGame(id);
   if (!game) notFound();
 
   return <GamePlayer game={game} />;

@@ -1,5 +1,7 @@
 import Home from "@/components/home";
+import { getGames } from "@/lib/data/games";
 
-export default function HomePage() {
-  return <Home />;
+export default async function HomePage() {
+  const games = await getGames();
+  return <Home games={games} />;
 }

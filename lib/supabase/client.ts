@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import type { Database } from "@/lib/supabase/database.types";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 
 // Cliente de Supabase para componentes de cliente. En el navegador,
@@ -6,5 +7,5 @@ import { getSupabaseEnv } from "@/lib/supabase/env";
 // devuelve siempre la misma instancia.
 export function createClient() {
   const { url, publishableKey } = getSupabaseEnv();
-  return createBrowserClient(url, publishableKey);
+  return createBrowserClient<Database>(url, publishableKey);
 }

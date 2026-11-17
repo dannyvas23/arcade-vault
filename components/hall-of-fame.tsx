@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useScores } from "@/components/scores-provider";
-import { GAMES } from "@/lib/games";
-import { formatScore, seededScores } from "@/lib/scores";
+import type { Game } from "@/lib/games";
+import { formatScore, type ScoreRow } from "@/lib/scores";
 
 const ROWS = 12;
 
@@ -20,19 +20,33 @@ function formatDate(at: number): string {
   });
 }
 
-export default function HallOfFame() {
-  const [tab, setTab] = useState(GAMES[0].id);
+// `scores` trae el Top 12 de cada juego, cargado en la página: `null` si esa
+// lectura falló y `[]` si el juego aún no tiene puntuaciones.
+export default function HallOfFame({
+  games,
+  scores,
+}: {
+  games: Game[];
+  scores: Record<string, ScoreRow[] | null>;
+}) {
+  const [tab, setTab] = useState(games[0].id);
   const { bestScore } = useScores();
 
-  const rows = useMemo(() => seededScores(tab, ROWS), [tab]);
-  const game = GAMES.find((g) => g.id === tab) ?? GAMES[0];
+  const rows = scores[tab] ?? null;
+  const game = games.find((g) => g.id === tab) ?? games[0];
+  // Puestos del podio; los que falten (1 o 2 filas) se pintan con «—».
+  const [first, second, third] = rows ?? [];
 
   // Con `ready: false` (servidor y primer render) bestScore devuelve null,
   // así que la fila se pinta como «sin puntuaciones» sin cambiar el layout.
   const mine = bestScore(tab);
-  // Posición dentro del Top 12 si la marca entra; si no, «—».
-  const rawRank = mine ? rows.filter((r) => r.score > mine.score).length + 1 : null;
+  // Posición dentro del Top 12 si la marca entra; si no, «—». Sin ranking
+  // cargado (error) no se puede calcular.
+  const rawRank =
+    mine && rows ? rows.filter((r) => r.score > mine.score).length + 1 : null;
   const myRank = rawRank !== null && rawRank <= ROWS ? rawRank : null;
+
+  const hasRows = rows !== null && rows.length > 0;
 
   return (
     <div className="av-hall fade-in">
@@ -44,7 +58,7 @@ export default function HallOfFame() {
       </div>
 
       <div className="hall-tabs">
-        {GAMES.map((g) => (
+        {games.map((g) => (
           <button
             key={g.id}
             type="button"
@@ -57,62 +71,101 @@ export default function HallOfFame() {
         ))}
       </div>
 
-      <div className="podium">
-        <div className="podium-slot silver">
-          <div className="rank-num">02</div>
-          <div className="name">{rows[1].name}</div>
-          <div className="score">{formatScore(rows[1].score)}</div>
-          <div className="date">{rows[1].date}</div>
+      {rows === null && (
+        <div
+          role="alert"
+          className="pixel"
+          style={{
+            padding: "56px 16px",
+            textAlign: "center",
+            fontSize: 12,
+            lineHeight: 1.6,
+            color: "var(--magenta)",
+          }}
+        >
+          NO SE PUDO CARGAR EL RANKING
         </div>
-        <div className="podium-slot gold">
-          <div
-            className="pixel"
-            style={{ fontSize: 9, color: "var(--gold)", letterSpacing: "0.18em" }}
-          >
-            CAMPEÓN
-          </div>
-          <div className="rank-num" style={{ fontSize: 36, marginTop: 4 }}>
-            01
-          </div>
-          <div className="name">{rows[0].name}</div>
-          <div className="score" style={{ fontSize: 20 }}>
-            {formatScore(rows[0].score)}
-          </div>
-          <div className="date">{rows[0].date}</div>
+      )}
+
+      {rows !== null && rows.length === 0 && (
+        <div
+          role="status"
+          className="pixel"
+          style={{
+            padding: "56px 16px",
+            textAlign: "center",
+            fontSize: 12,
+            lineHeight: 1.6,
+            color: "var(--ink-faint)",
+          }}
+        >
+          SIN PUNTUACIONES TODAVÍA
         </div>
-        <div className="podium-slot bronze">
-          <div className="rank-num">03</div>
-          <div className="name">{rows[2].name}</div>
-          <div className="score">{formatScore(rows[2].score)}</div>
-          <div className="date">{rows[2].date}</div>
+      )}
+
+      {hasRows && (
+        <div className="podium">
+          <div className="podium-slot silver">
+            <div className="rank-num">02</div>
+            <div className="name">{second?.name ?? "—"}</div>
+            <div className="score">{second ? formatScore(second.score) : "—"}</div>
+            <div className="date">{second?.date ?? "—"}</div>
+          </div>
+          <div className="podium-slot gold">
+            <div
+              className="pixel"
+              style={{ fontSize: 9, color: "var(--gold)", letterSpacing: "0.18em" }}
+            >
+              CAMPEÓN
+            </div>
+            <div className="rank-num" style={{ fontSize: 36, marginTop: 4 }}>
+              01
+            </div>
+            <div className="name">{first?.name ?? "—"}</div>
+            <div className="score" style={{ fontSize: 20 }}>
+              {first ? formatScore(first.score) : "—"}
+            </div>
+            <div className="date">{first?.date ?? "—"}</div>
+          </div>
+          <div className="podium-slot bronze">
+            <div className="rank-num">03</div>
+            <div className="name">{third?.name ?? "—"}</div>
+            <div className="score">{third ? formatScore(third.score) : "—"}</div>
+            <div className="date">{third?.date ?? "—"}</div>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="hall-table">
-        <div className="th">
-          <div>RANGO</div>
-          <div>JUGADOR</div>
-          <div>PUNTUACIÓN</div>
-          <div>FECHA</div>
-        </div>
-        {rows.map((r, i) => (
-          <div
-            key={`${tab}-${i}`}
-            className={
-              "tr" + (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")
-            }
-            style={{ animationDelay: `${i * 50}ms` }}
-          >
-            <div className="rk">#{pad(r.rank)}</div>
-            <div className="pl">{r.name}</div>
-            <div className="sc">{formatScore(r.score)}</div>
-            <div className="dt">{r.date}</div>
-          </div>
-        ))}
+        {hasRows && (
+          <>
+            <div className="th">
+              <div>RANGO</div>
+              <div>JUGADOR</div>
+              <div>PUNTUACIÓN</div>
+              <div>FECHA</div>
+            </div>
+            {rows.map((r, i) => (
+              <div
+                key={`${tab}-${i}`}
+                className={
+                  "tr" +
+                  (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")
+                }
+                style={{ animationDelay: `${i * 50}ms` }}
+              >
+                <div className="rk">#{pad(r.rank)}</div>
+                <div className="pl">{r.name}</div>
+                <div className="sc">{formatScore(r.score)}</div>
+                <div className="dt">{r.date}</div>
+              </div>
+            ))}
+          </>
+        )}
         <div className="tr you-label">▸ TU MEJOR MARCA EN {game.title}</div>
         <div
           className="tr you"
-          style={{ animationDelay: `${rows.length * 50 + 50}ms` }}
+          style={{ animationDelay: `${(rows?.length ?? 0) * 50 + 50}ms` }}
         >
           <div className="rk" style={{ color: "var(--yellow)" }}>
             {myRank !== null ? `#${pad(myRank)}` : "—"}

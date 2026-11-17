@@ -1,6 +1,6 @@
 # SPEC 04 — Juego ROCAS (Asteroids) jugable en el Reproductor
 
-> **Estado:** Implementado
+> **Estado:** Implementado 
 > **Depende de:** SPEC 01 (Reproductor, catálogo `lib/games.ts` y `ScoresProvider`)
 > **Fecha:** 2026-11-15
 > **Objetivo:** Sustituir la simulación del Reproductor en `/juegos/rocas/jugar` por el juego Asteroids de `references/started-games/02-asteroids/` portado a TypeScript, con paleta neón, que conserva su HUD en el canvas y notifica puntuación, vidas, nivel y fin de partida al HUD, los botones y el modal de guardado de la plataforma.

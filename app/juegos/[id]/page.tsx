@@ -3,12 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import GameCover from "@/components/game-cover";
 import Leaderboard from "@/components/leaderboard";
-import { GAMES, getGame } from "@/lib/games";
-import { formatScore, seededScores } from "@/lib/scores";
+import { getGame, getGames } from "@/lib/data/games";
+import { getTopScores } from "@/lib/data/scores";
+import { formatPlays, formatScore } from "@/lib/scores";
 
-// Los 8 ids se conocen en build: `params` se resuelve en el prerender.
-export function generateStaticParams() {
-  return GAMES.map((g) => ({ id: g.id }));
+// Los ids (slugs) se leen de la BD en build: `params` se resuelve en el prerender.
+export async function generateStaticParams() {
+  const games = await getGames();
+  return games.map((g) => ({ id: g.id }));
 }
 
 // La página no espera `params`: lo lee un componente interno dentro de
@@ -28,10 +30,12 @@ async function GameDetail({
   params: PageProps<"/juegos/[id]">["params"];
 }) {
   const { id } = await params;
-  const game = getGame(id);
+  const game = await getGame(id);
   if (!game) notFound();
 
-  const scores = seededScores(game.id, 10);
+  // `null` si la lectura falla: el ranking muestra su estado de error y el
+  // resto de la página sigue funcionando.
+  const scores = await getTopScores(game.id, 10);
 
   return (
     <div className="av-detail fade-in">
@@ -51,7 +55,7 @@ async function GameDetail({
           <div className="stat-strip">
             <div>
               <div className="l">Partidas</div>
-              <div className="v">{game.plays}</div>
+              <div className="v">{formatPlays(game.plays)}</div>
             </div>
             <div>
               <div className="l">Mejor global</div>

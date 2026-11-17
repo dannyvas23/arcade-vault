@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import GameCover from "@/components/game-cover";
 import Leaderboard from "@/components/leaderboard";
 import { GAMES, getGame } from "@/lib/games";
-import { formatScore, seededScores } from "@/lib/scores";
+import { formatPlays, formatScore, seededScores } from "@/lib/scores";
 
 // Los 8 ids se conocen en build: `params` se resuelve en el prerender.
 export function generateStaticParams() {
@@ -51,7 +51,7 @@ async function GameDetail({
           <div className="stat-strip">
             <div>
               <div className="l">Partidas</div>
-              <div className="v">{game.plays}</div>
+              <div className="v">{formatPlays(game.plays)}</div>
             </div>
             <div>
               <div className="l">Mejor global</div>

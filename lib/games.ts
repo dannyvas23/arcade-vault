@@ -11,8 +11,8 @@ export type Game = {
   cat: GameCategory;
   cover: string; // clase CSS de globals.css, p. ej. "cover-bricks"
   color: GameColor; // define el color del botón JUGAR en la tarjeta
-  best: number; // "mejor puntuación" mock
-  plays: string; // "12.4K"
+  best: number; // MAX(score) del juego (columna `best` de games_catalog)
+  plays: number; // entero (12400); se muestra con formatPlays
 };
 
 export const GAMES: Game[] = [
@@ -25,7 +25,7 @@ export const GAMES: Game[] = [
     cover: "cover-bricks",
     color: "cyan",
     best: 28450,
-    plays: "12.4K",
+    plays: 12400,
   },
   {
     id: "caida",
@@ -36,7 +36,7 @@ export const GAMES: Game[] = [
     cover: "cover-tetro",
     color: "magenta",
     best: 184220,
-    plays: "31.8K",
+    plays: 31800,
   },
   {
     id: "serpentina",
@@ -47,7 +47,7 @@ export const GAMES: Game[] = [
     cover: "cover-snake",
     color: "green",
     best: 7820,
-    plays: "9.1K",
+    plays: 9100,
   },
   {
     id: "gloton",
@@ -58,7 +58,7 @@ export const GAMES: Game[] = [
     cover: "cover-glot",
     color: "yellow",
     best: 96400,
-    plays: "27.2K",
+    plays: 27200,
   },
   {
     id: "invasores",
@@ -69,7 +69,7 @@ export const GAMES: Game[] = [
     cover: "cover-invaders",
     color: "green",
     best: 54190,
-    plays: "18.0K",
+    plays: 18000,
   },
   {
     id: "rocas",
@@ -80,7 +80,7 @@ export const GAMES: Game[] = [
     cover: "cover-rocas",
     color: "yellow",
     best: 41200,
-    plays: "15.6K",
+    plays: 15600,
   },
   {
     id: "ranaria",
@@ -91,7 +91,7 @@ export const GAMES: Game[] = [
     cover: "cover-rana",
     color: "green",
     best: 18900,
-    plays: "6.4K",
+    plays: 6400,
   },
   {
     id: "duelo-pixel",
@@ -102,7 +102,7 @@ export const GAMES: Game[] = [
     cover: "cover-duelo",
     color: "cyan",
     best: 24,
-    plays: "4.2K",
+    plays: 4200,
   },
 ];
 

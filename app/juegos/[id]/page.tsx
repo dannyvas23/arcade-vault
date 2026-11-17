@@ -3,12 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import GameCover from "@/components/game-cover";
 import Leaderboard from "@/components/leaderboard";
-import { GAMES, getGame } from "@/lib/games";
+import { getGame, getGames } from "@/lib/data/games";
 import { formatPlays, formatScore, seededScores } from "@/lib/scores";
 
-// Los 8 ids se conocen en build: `params` se resuelve en el prerender.
-export function generateStaticParams() {
-  return GAMES.map((g) => ({ id: g.id }));
+// Los ids (slugs) se leen de la BD en build: `params` se resuelve en el prerender.
+export async function generateStaticParams() {
+  const games = await getGames();
+  return games.map((g) => ({ id: g.id }));
 }
 
 // La página no espera `params`: lo lee un componente interno dentro de
@@ -28,7 +29,7 @@ async function GameDetail({
   params: PageProps<"/juegos/[id]">["params"];
 }) {
   const { id } = await params;
-  const game = getGame(id);
+  const game = await getGame(id);
   if (!game) notFound();
 
   const scores = seededScores(game.id, 10);

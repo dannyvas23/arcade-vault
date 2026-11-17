@@ -3,7 +3,7 @@ import FeatureIcon from "@/components/feature-icon";
 import GameCover from "@/components/game-cover";
 import HomeSilhouettes from "@/components/home-silhouettes";
 import Reveal from "@/components/reveal";
-import { GAMES, type Game } from "@/lib/games";
+import type { Game } from "@/lib/games";
 import { FEATURES } from "@/lib/home";
 
 type NeonColor = "cyan" | "magenta" | "yellow" | "green";
@@ -40,7 +40,7 @@ function MiniCard({ game }: { game: Game }) {
   );
 }
 
-export default function Home() {
+export default function Home({ games }: { games: Game[] }) {
   return (
     <div className="home fade-in">
       {/* HERO */}
@@ -97,7 +97,7 @@ export default function Home() {
       <Reveal className="home-section">
         <SectionHead kicker="// 02" color="cyan" title="JUEGOS DISPONIBLES AHORA" />
         <div className="mini-rail">
-          {GAMES.slice(0, 6).map((g) => (
+          {games.slice(0, 6).map((g) => (
             <MiniCard key={g.id} game={g} />
           ))}
         </div>

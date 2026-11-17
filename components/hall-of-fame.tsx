@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useScores } from "@/components/scores-provider";
-import { GAMES } from "@/lib/games";
+import type { Game } from "@/lib/games";
 import { formatScore, seededScores } from "@/lib/scores";
 
 const ROWS = 12;
@@ -20,12 +20,12 @@ function formatDate(at: number): string {
   });
 }
 
-export default function HallOfFame() {
-  const [tab, setTab] = useState(GAMES[0].id);
+export default function HallOfFame({ games }: { games: Game[] }) {
+  const [tab, setTab] = useState(games[0].id);
   const { bestScore } = useScores();
 
   const rows = useMemo(() => seededScores(tab, ROWS), [tab]);
-  const game = GAMES.find((g) => g.id === tab) ?? GAMES[0];
+  const game = games.find((g) => g.id === tab) ?? games[0];
 
   // Con `ready: false` (servidor y primer render) bestScore devuelve null,
   // así que la fila se pinta como «sin puntuaciones» sin cambiar el layout.
@@ -44,7 +44,7 @@ export default function HallOfFame() {
       </div>
 
       <div className="hall-tabs">
-        {GAMES.map((g) => (
+        {games.map((g) => (
           <button
             key={g.id}
             type="button"

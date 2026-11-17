@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import GameCover from "@/components/game-cover";
 import Leaderboard from "@/components/leaderboard";
 import { getGame, getGames } from "@/lib/data/games";
-import { formatPlays, formatScore, seededScores } from "@/lib/scores";
+import { getTopScores } from "@/lib/data/scores";
+import { formatPlays, formatScore } from "@/lib/scores";
 
 // Los ids (slugs) se leen de la BD en build: `params` se resuelve en el prerender.
 export async function generateStaticParams() {
@@ -32,7 +33,9 @@ async function GameDetail({
   const game = await getGame(id);
   if (!game) notFound();
 
-  const scores = seededScores(game.id, 10);
+  // `null` si la lectura falla: el ranking muestra su estado de error y el
+  // resto de la página sigue funcionando.
+  const scores = await getTopScores(game.id, 10);
 
   return (
     <div className="av-detail fade-in">

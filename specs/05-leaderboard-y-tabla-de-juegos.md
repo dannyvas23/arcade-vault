@@ -1,6 +1,6 @@
 # SPEC 05 — Tabla de juegos y leaderboard en Supabase
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (catálogo, Salón, `ScoresProvider`, Reproductor), SPEC 03 (clientes de Supabase)
 > **Fecha:** 2026-11-16
 > **Objetivo:** Crear en Supabase las tablas `games` y `scores`, sembradas con el catálogo y los rankings mock actuales, y conectar el catálogo, los rankings y el guardado de puntuaciones a ellas, con `localStorage` como respaldo del guardado.

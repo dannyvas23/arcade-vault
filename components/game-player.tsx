@@ -25,7 +25,14 @@ export default function GamePlayer({ game }: { game: Game }) {
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState("INVITADO");
-  const [saved, setSaved] = useState(false);
+  // idle: sin guardar · saving: acción en curso · remote: en Supabase y en este
+  // dispositivo · local: solo en este dispositivo (falló el guardado remoto).
+  const [saveState, setSaveState] = useState<
+    "idle" | "saving" | "remote" | "local"
+  >("idle");
+  // Se incrementa al reiniciar: un guardado que termina después de «JUGAR DE
+  // NUEVO» no debe pintar su resultado en la partida nueva.
+  const saveRun = useRef(0);
 
   const level = isRocas
     ? engineLevel
@@ -71,12 +78,15 @@ export default function GamePlayer({ game }: { game: Game }) {
     setEngineLevel(1);
     setPaused(false);
     setOver(false);
-    setSaved(false);
+    saveRun.current += 1;
+    setSaveState("idle");
   };
 
-  const save = () => {
-    saveScore({ gameId: game.id, name, score });
-    setSaved(true);
+  const save = async () => {
+    const run = saveRun.current;
+    setSaveState("saving");
+    const result = await saveScore({ gameId: game.id, name, score });
+    if (saveRun.current === run) setSaveState(result);
   };
 
   return (
@@ -183,20 +193,30 @@ export default function GamePlayer({ game }: { game: Game }) {
             <h2 id="gameover-title">FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
             <div className="final">{formatScore(score)}</div>
-            {!saved ? (
+            {saveState === "idle" || saveState === "saving" ? (
               <div className="input-row">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))}
                   placeholder="TUS INICIALES"
                   aria-label="Tus iniciales"
+                  disabled={saveState === "saving"}
                 />
-                <button type="button" className="btn yellow" onClick={save}>
-                  GUARDAR PUNTUACIÓN
+                <button
+                  type="button"
+                  className="btn yellow"
+                  onClick={save}
+                  disabled={saveState === "saving"}
+                >
+                  {saveState === "saving" ? "GUARDANDO…" : "GUARDAR PUNTUACIÓN"}
                 </button>
               </div>
             ) : (
-              <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
+              <div className="toast-saved" role="status">
+                {saveState === "remote"
+                  ? "▸ PUNTUACIÓN GUARDADA_"
+                  : "▸ GUARDADA SOLO EN ESTE DISPOSITIVO_"}
+              </div>
             )}
             <div className="actions">
               <button type="button" className="btn" onClick={restart}>

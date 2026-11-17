@@ -8,12 +8,15 @@ import {
   useMemo,
   useState,
 } from "react";
+import { submitScore } from "@/lib/actions/scores";
 import { appendScore, readScores, type SavedScore } from "@/lib/storage";
 
 type ScoresContextValue = {
   ready: boolean; // false en servidor y primer render del cliente
   scores: SavedScore[];
-  saveScore: (s: Omit<SavedScore, "at">) => void;
+  // "remote": guardada en Supabase y en localStorage.
+  // "local": la acción falló; solo quedó en localStorage.
+  saveScore: (s: Omit<SavedScore, "at">) => Promise<"remote" | "local">;
   bestScore: (gameId: string) => SavedScore | null;
 };
 
@@ -35,11 +38,28 @@ export function ScoresProvider({ children }: { children: React.ReactNode }) {
     setState({ ready: true, scores: readScores() });
   }, []);
 
-  const saveScore = useCallback((s: Omit<SavedScore, "at">) => {
-    const entry: SavedScore = { ...s, at: Date.now() };
-    appendScore(entry);
-    setState((prev) => ({ ...prev, scores: [...prev.scores, entry] }));
-  }, []);
+  const saveScore = useCallback(
+    async (s: Omit<SavedScore, "at">): Promise<"remote" | "local"> => {
+      // localStorage se escribe siempre y primero: es el respaldo si falla
+      // Supabase y la fuente de «TU MEJOR MARCA».
+      const entry: SavedScore = { ...s, at: Date.now() };
+      appendScore(entry);
+      setState((prev) => ({ ...prev, scores: [...prev.scores, entry] }));
+
+      try {
+        const result = await submitScore({
+          gameId: s.gameId,
+          name: s.name,
+          score: s.score,
+        });
+        return result.ok ? "remote" : "local";
+      } catch {
+        // Sin red o error del servidor: la marca queda solo en este dispositivo.
+        return "local";
+      }
+    },
+    [],
+  );
 
   const bestScore = useCallback(
     (gameId: string): SavedScore | null => {

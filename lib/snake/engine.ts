@@ -183,7 +183,9 @@ export class SnakeEngine {
   private turn(dir: Direction): void {
     if (this.state === "waiting") {
       if (isOpposite(this.direction, dir)) return;
-      this.direction = dir;
+      // La tecla entra en la cola como cualquier giro (salvo seguir recto), para
+      // que el primer paso vaya en su dirección y un segundo giro rápido no la pise.
+      if (dir !== this.direction) this.queue.push(dir);
       this.state = "playing";
       this.stepAccum = 0;
       this.lastTime = null;

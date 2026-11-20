@@ -1,6 +1,6 @@
 # SPEC 08 — Juego SNAKE jugable en el Reproductor
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (Reproductor, catálogo y `ScoresProvider`), SPEC 04 (juego ROCAS), SPEC 05 (tabla de juegos y leaderboard en Supabase), SPEC 06 (juego TETRIS y registro de juegos), SPEC 07 (juego ARKANOID)
 > **Fecha:** 2026-11-20
 > **Objetivo:** Crear en TypeScript el juego Snake con los sprites de frutas de `references/source-assets/`, renombrar el juego SERPENTINA del catálogo a SNAKE y conectarlo al HUD, los botones, el modal de guardado y el leaderboard de la plataforma mediante el registro de juegos.

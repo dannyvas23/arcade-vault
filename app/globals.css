@@ -12,6 +12,9 @@
   --color-magenta: var(--magenta);
   --color-yellow: var(--yellow);
   --color-green: var(--green);
+  --color-purple: var(--purple);
+  --color-blue: var(--blue);
+  --color-orange: var(--orange);
   --color-gold: var(--gold);
   --color-silver: var(--silver);
   --color-bronze: var(--bronze);
@@ -31,6 +34,9 @@
   --magenta: #ff006e;
   --yellow: #f5ff00;
   --green: #00ff88;
+  --purple: #b44dff;
+  --blue: #3d8bff;
+  --orange: #ff8a1f;
   --gold: #ffcf3a;
   --silver: #c7d0e0;
   --bronze: #d97a3a;

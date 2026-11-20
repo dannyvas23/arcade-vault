@@ -4,17 +4,8 @@ import { useEffect, useImperativeHandle, useRef } from "react";
 import {
   AsteroidsEngine,
   type AsteroidsPalette,
-  type AsteroidsStats,
 } from "@/lib/asteroids/engine";
-
-export type AsteroidsHandle = { restart(): void; finish(): void };
-
-type Props = {
-  ref: React.Ref<AsteroidsHandle>;
-  paused: boolean;
-  onStats: (s: AsteroidsStats) => void;
-  onGameOver: (s: AsteroidsStats) => void;
-};
+import type { GameCanvasProps } from "@/lib/game-types";
 
 // Lee la paleta neón de las variables CSS de globals.css (el motor no toca el DOM).
 function readPalette(el: HTMLElement): AsteroidsPalette {
@@ -36,7 +27,7 @@ export default function AsteroidsCanvas({
   paused,
   onStats,
   onGameOver,
-}: Props) {
+}: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<AsteroidsEngine | null>(null);
   const pausedRef = useRef(paused);

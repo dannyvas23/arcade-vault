@@ -1,6 +1,6 @@
 # SPEC 07 — Juego ARKANOID jugable en el Reproductor
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (Reproductor, catálogo y `ScoresProvider`), SPEC 04 (juego ROCAS), SPEC 05 (tabla de juegos y leaderboard en Supabase), SPEC 06 (juego TETRIS y registro de juegos)
 > **Fecha:** 2026-11-20
 > **Objetivo:** Portar a TypeScript el Arkanoid de `references/started-games/04-arkanoid/`, renombrar el juego BLOQUE BUSTER del catálogo a ARKANOID y conectarlo al HUD, los botones, el modal de guardado y el leaderboard de la plataforma mediante el registro de juegos.

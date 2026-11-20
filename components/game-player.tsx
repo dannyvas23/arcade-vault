@@ -2,23 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import AsteroidsCanvas, {
-  type AsteroidsHandle,
-} from "@/components/asteroids-canvas";
+import { GAME_REGISTRY, type GameEntry } from "@/components/game-registry";
 import { useScores } from "@/components/scores-provider";
-import type { AsteroidsStats } from "@/lib/asteroids/engine";
+import type { GameHandle, GameStats } from "@/lib/game-types";
 import type { Game } from "@/lib/games";
 import { formatScore } from "@/lib/scores";
 
 const LIVES = 3; // sin juego real no hay mecánica que reduzca las vidas
 const POINTS_PER_LEVEL = 2500;
 
-// Reproductor: ROCAS usa el motor real; el resto de juegos sigue con la
-// simulación (la puntuación sube sola sobre una arena decorativa).
+// Reproductor: los juegos del registro usan su motor real; el resto sigue con
+// la simulación (la puntuación sube sola sobre una arena decorativa).
 export default function GamePlayer({ game }: { game: Game }) {
   const { saveScore } = useScores();
-  const isRocas = game.id === "rocas";
-  const engineRef = useRef<AsteroidsHandle>(null);
+  const entry: GameEntry | undefined = GAME_REGISTRY[game.id];
+  const GameCanvas = entry?.Canvas;
+  const engineRef = useRef<GameHandle>(null);
   const [score, setScore] = useState(0);
   const [engineLives, setEngineLives] = useState(LIVES);
   const [engineLevel, setEngineLevel] = useState(1);
@@ -34,45 +33,50 @@ export default function GamePlayer({ game }: { game: Game }) {
   // NUEVO» no debe pintar su resultado en la partida nueva.
   const saveRun = useRef(0);
 
-  const level = isRocas
-    ? engineLevel
-    : 1 + Math.floor(score / POINTS_PER_LEVEL);
-  const lives = isRocas ? engineLives : LIVES;
+  // Simulación: nivel por puntos y 3 vidas fijas. Juego del registro: valores
+  // del motor, o «—» si el juego no tiene ese dato (hud.lives / hud.level).
+  const level = entry ? engineLevel : 1 + Math.floor(score / POINTS_PER_LEVEL);
+  const lives = entry ? engineLives : LIVES;
+  const levelLabel =
+    entry && !entry.hud.level ? "—" : String(level).padStart(2, "0");
+  const livesLabel =
+    entry && !entry.hud.lives ? "—" : "♥ ".repeat(lives).trim();
 
-  // El motor solo emite cuando cambia algún valor.
-  const handleStats = (s: AsteroidsStats) => {
+  // El motor solo emite cuando cambia algún valor; lives y level son opcionales.
+  const handleStats = (s: GameStats) => {
     setScore(s.score);
-    setEngineLives(s.lives);
-    setEngineLevel(s.level);
+    if (s.lives !== undefined) setEngineLives(s.lives);
+    if (s.level !== undefined) setEngineLevel(s.level);
   };
 
   // Math.random solo se llama dentro del callback del intervalo (cliente, tras
   // montar), nunca durante el render.
   useEffect(() => {
-    if (isRocas || over || paused) return;
+    if (entry || over || paused) return;
     const t = setInterval(
       () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
       220,
     );
     return () => clearInterval(t);
-  }, [isRocas, over, paused]);
+  }, [entry, over, paused]);
 
-  // El motor llama a onGameOver una vez por partida: al perder la última vida
+  // El motor llama a onGameOver una vez por partida: al terminar la partida
   // y al pulsar FIN (finish()).
-  const handleGameOver = (s: AsteroidsStats) => {
+  const handleGameOver = (s: GameStats) => {
     handleStats(s);
     setOver(true);
   };
 
-  // FIN: en ROCAS pasa por el motor, de modo que el canvas muestra GAME OVER y
-  // el modal se abre por la misma ruta que al perder la última vida.
+  // FIN: en los juegos del registro pasa por el motor, de modo que el canvas
+  // muestra su pantalla de fin y el modal se abre por la misma ruta que al
+  // terminar la partida.
   const finish = () => {
-    if (isRocas) engineRef.current?.finish();
+    if (entry) engineRef.current?.finish();
     else setOver(true);
   };
 
   const restart = () => {
-    if (isRocas) engineRef.current?.restart();
+    if (entry) engineRef.current?.restart();
     setScore(0);
     setEngineLives(LIVES);
     setEngineLevel(1);
@@ -105,11 +109,11 @@ export default function GamePlayer({ game }: { game: Game }) {
           </div>
           <div className="hud-stat lives">
             <div className="l">Vidas</div>
-            <div className="v">{"♥ ".repeat(lives).trim()}</div>
+            <div className="v">{livesLabel}</div>
           </div>
           <div className="hud-stat level">
             <div className="l">Nivel</div>
-            <div className="v">{String(level).padStart(2, "0")}</div>
+            <div className="v">{levelLabel}</div>
           </div>
         </div>
         <div className="hud-actions">
@@ -135,8 +139,8 @@ export default function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          {isRocas ? (
-            <AsteroidsCanvas
+          {GameCanvas ? (
+            <GameCanvas
               ref={engineRef}
               paused={paused}
               onStats={handleStats}

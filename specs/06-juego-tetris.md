@@ -1,6 +1,6 @@
 # SPEC 06 — Juego TETRIS jugable en el Reproductor
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (Reproductor, catálogo y `ScoresProvider`), SPEC 04 (juego ROCAS), SPEC 05 (tabla de juegos y leaderboard en Supabase)
 > **Fecha:** 2026-11-20
 > **Objetivo:** Portar a TypeScript el Tetris de `references/started-games/03-tetris/`, renombrar el juego CAÍDA del catálogo a TETRIS y conectarlo al HUD, los botones, el modal de guardado y el leaderboard de la plataforma mediante un registro de juegos.

@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import ArkanoidCanvas from "@/components/arkanoid-canvas";
 import AsteroidsCanvas from "@/components/asteroids-canvas";
 import TetrisCanvas from "@/components/tetris-canvas";
 import type { GameCanvasProps } from "@/lib/game-types";
@@ -15,4 +16,5 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
   rocas: { Canvas: AsteroidsCanvas, hud: { lives: true, level: true } },
   // TETRIS no tiene vidas: el HUD de la plataforma muestra «—» en Vidas.
   tetris: { Canvas: TetrisCanvas, hud: { lives: false, level: true } },
+  arkanoid: { Canvas: ArkanoidCanvas, hud: { lives: true, level: true } },
 };

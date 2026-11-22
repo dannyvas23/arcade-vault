@@ -26,6 +26,12 @@ El proyecto sigue **Spec Driven Design** con las skills `/spec` y `/spec-impl` d
 - **`/spec`** y **`/spec-impl`** — escribir e implementar specs. Viven en `.agents/skills/` y `.claude/skills/spec*` son symlinks a esa carpeta (si el symlink no se resuelve en Windows, lee `.agents/skills/…`).
 - **`/spec-juego <ruta en references/started-games | nombre o idea>`** — genera la spec (`specs/NN-juego-<slug>.md`) para añadir o portar un juego con su leaderboard. Solo escribe la spec (no código ni migraciones); la implementación la hace luego `/spec-impl`. Tiene `disable-model-invocation`, así que solo se ejecuta si el usuario la invoca. Contiene `contrato-integracion.md` (reglas del motor, teclado, callbacks, registro, catálogo y criterios de aceptación), `guia-port.md` y `plantilla-spec-juego.md` en `.claude/skills/spec-juego/`. Léelos antes de tocar un juego.
 
+## Agentes
+
+- **`game-planner`** (`.claude/agents/game-planner.md`) — planifica y decide qué juego encaja a continuación en la plataforma. Cruza `JUEGOS.md`, las specs, `components/game-registry.ts`, el contrato de integración y el catálogo en vivo de Supabase (solo `select`), evalúa candidatos (los 4 juegos del catálogo aún simulados e ideas nuevas) y recomienda uno con su justificación, esfuerzo y riesgos. Úsalo **antes** de `/spec-juego`: él decide *qué* juego, la skill escribe la spec. No escribe specs, código ni migraciones.
+  - **Memoria persistente** (`memory: project`): guarda en `.claude/agent-memory/game-planner/` un registro de sugerencias (`historial-sugerencias.md`, con veredicto y estado: Sugerido → Aceptado → Especificado → Implementado, o Rechazado) y las preferencias del usuario en `MEMORY.md`. No repite juegos ya sugeridos y reconcilia el estado real con `specs/`, el registro y la BD. Ese directorio se versiona con el repo; commitéalo con tu trabajo.
+  - Invócalo pidiéndolo por su nombre («usa game-planner para decidir el siguiente juego»). Si le rechazas una sugerencia, dile el motivo para que lo registre.
+
 ## Commands
 
 - `npm run dev` / `npm run build` / `npm run start` / `npm run lint` (eslint 9, `eslint-config-next`).

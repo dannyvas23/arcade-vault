@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Arcade Vault** es una plataforma para jugar online y competir por la mayor cantidad de puntos (ver `README.md`). Catálogo de 8 juegos, Reproductor con marco CRT, Salón de la Fama y rankings por juego guardados en Supabase. No hay Auth todavía (el jugador es «INVITADO» y teclea sus iniciales al guardar) ni página «Acerca de».
 
-Estado de los juegos: **4 tienen motor real** (ROCAS, TETRIS, ARKANOID, SNAKE, registrados en `components/game-registry.ts`); los otros 4 del catálogo siguen con la **simulación** del Reproductor (la puntuación sube sola sobre `.game-arena`).
+Estado de los juegos: **5 tienen motor real** (ROCAS, TETRIS, ARKANOID, SNAKE, INVADERS, registrados en `components/game-registry.ts`); los otros 3 del catálogo (GLOTÓN, RANARIA, DUELO PIXEL) siguen con la **simulación** del Reproductor (la puntuación sube sola sobre `.game-arena`).
 
 Conversación y mensajes de commit en español.
 
@@ -17,7 +17,7 @@ Conversación y mensajes de commit en español.
 El proyecto sigue **Spec Driven Design** con las skills `/spec` y `/spec-impl` de `Klerith/fernando-skills` (`npx skills@latest add Klerith/fernando-skills`, fijadas en `skills-lock.json`) más una skill propia, `/spec-juego`.
 
 - Specs numeradas en `specs/NN-slug.md`; cada una tiene cabecera `Estado` (Borrador/Aprobado/Implementado), `Depende de`, `Fecha` y `Objetivo`. Se **commitea primero la spec** y luego la implementación en una rama `spec-NN-slug` (`specs/.spec-config.yml` → `AutoCreateBranch: true`, `/spec-impl` crea la rama sin preguntar). Cada spec entra a `main` mediante un PR.
-- Specs existentes: 01 pantallas MVP visual · 02 home landing · 03 integración Supabase · 04 juego ROCAS · 05 tabla de juegos y leaderboard · 06 juego TETRIS · 07 juego ARKANOID · 08 juego SNAKE. La siguiente es la 09. Al terminar una spec, pasa su estado a «Implementado».
+- Specs existentes: 01 pantallas MVP visual · 02 home landing · 03 integración Supabase · 04 juego ROCAS · 05 tabla de juegos y leaderboard · 06 juego TETRIS · 07 juego ARKANOID · 08 juego SNAKE · 09 juego INVADERS (salió de la game jam «invasores», variante A; la variante B `prisma` quedó «Rechazada» en `specs/game-jam/invasores/`). La siguiente es la 10. Al terminar una spec, pasa su estado a «Implementado».
 - Los commits recientes usan el prefijo `feat:` en inglés (p. ej. `feat: add Snake game …`); los anteriores usaban frases en español. Sigue el estilo de los commits más recientes.
 
 ## Skills
@@ -28,7 +28,7 @@ El proyecto sigue **Spec Driven Design** con las skills `/spec` y `/spec-impl` d
 
 ## Agentes
 
-- **`game-planner`** (`.claude/agents/game-planner.md`) — planifica y decide qué juego encaja a continuación en la plataforma. Cruza `JUEGOS.md`, las specs, `components/game-registry.ts`, el contrato de integración y el catálogo en vivo de Supabase (solo `select`), evalúa candidatos (los 4 juegos del catálogo aún simulados e ideas nuevas) y recomienda uno con su justificación, esfuerzo y riesgos. Úsalo **antes** de `/spec-juego`: él decide *qué* juego, la skill escribe la spec. No escribe specs, código ni migraciones.
+- **`game-planner`** (`.claude/agents/game-planner.md`) — planifica y decide qué juego encaja a continuación en la plataforma. Cruza `JUEGOS.md`, las specs, `components/game-registry.ts`, el contrato de integración y el catálogo en vivo de Supabase (solo `select`), evalúa candidatos (los 3 juegos del catálogo aún simulados e ideas nuevas) y recomienda uno con su justificación, esfuerzo y riesgos. Úsalo **antes** de `/spec-juego`: él decide *qué* juego, la skill escribe la spec. No escribe specs, código ni migraciones.
   - **Memoria persistente** (`memory: project`): guarda en `.claude/agent-memory/game-planner/` un registro de sugerencias (`historial-sugerencias.md`, con veredicto y estado: Sugerido → Aceptado → Especificado → Implementado, o Rechazado) y las preferencias del usuario en `MEMORY.md`. No repite juegos ya sugeridos y reconcilia el estado real con `specs/`, el registro y la BD. Ese directorio se versiona con el repo; commitéalo con tu trabajo.
   - Invócalo pidiéndolo por su nombre («usa game-planner para decidir el siguiente juego»). Si le rechazas una sugerencia, dile el motivo para que lo registre.
 - **`game-jam`** (`.claude/agents/game-jam.md`) — agente de game jam: le das un **tema** y, **sin hacer preguntas**, genera **2 specs completas** de 2 juegos distintos que lo interpretan, en `specs/game-jam/<tema-slug>/variante-a-<id>.md` y `variante-b-<id>.md`, con el formato y nivel de detalle de las SPEC 07 y 08. Las deja en `Borrador` para que las revises: eliges una variante, la mueves a `specs/NN-juego-<slug>.md` con su número definitivo, la pasas a `Aprobado` y lanzas `/spec-impl`. Solo escribe dentro de `specs/game-jam/` (Supabase solo `select`); no escribe código, CSS ni migraciones. Invócalo por su nombre («usa game-jam con el tema "espacio"»).
@@ -54,7 +54,7 @@ El proyecto sigue **Spec Driven Design** con las skills `/spec` y `/spec-impl` d
 
 | Ruta | Contenido |
 | ---- | --------- |
-| `/` | Home (landing): `components/home.tsx`, datos mock en `lib/home.ts`. Muestra `games.slice(0, 6)`: un juego con `sort_order` ≥ 7 no aparece en la home. |
+| `/` | Home (landing): `components/home.tsx`, datos mock en `lib/home.ts`. Muestra `games.slice(0, 6)`: un juego con `sort_order` ≥ 7 no aparece en la home. `RECENT_SCORES` (actividad reciente) existe en `lib/home.ts` pero ningún componente lo muestra. |
 | `/juegos` | Biblioteca con filtro por categoría (`components/library.tsx`). |
 | `/juegos/[id]` | Detalle del juego + ranking. `generateStaticParams` sale de la BD. |
 | `/juegos/[id]/jugar` | Reproductor (`components/game-player.tsx`). |
@@ -78,10 +78,11 @@ Un juego con motor real consta de: `lib/<id>/entities.ts` + `lib/<id>/engine.ts`
 | TETRIS | `tetris` | `lib/tetris/` | portado de `03-tetris/` (sin vidas) |
 | ARKANOID | `arkanoid` | `lib/arkanoid/` | portado de `04-arkanoid/` (5 niveles, sonidos y sprites en `public/games/arkanoid/`) |
 | SNAKE | `snake` | `lib/snake/` | creado desde cero con sprites de frutas (`references/source-assets/`, `public/games/snake/`; sin vidas) |
+| INVADERS | `invaders` | `lib/invaders/` | creado desde cero (sin código de origen): mapas de bits propios dibujados con rectángulos, 4 oleadas, escudos destruibles y nave nodriza; sin assets (`public/games/invaders/` no existe) |
 
 Reglas que no se deben romper (detalle en `.claude/skills/spec-juego/contrato-integracion.md`): sin `document.`/`getElementById` ni colores literales (salvo fondo `#000`) en `lib/<id>/`; `Math.random()` y el estado de partida se crean en `start()`/`restart()`, nunca en el constructor; teclado en `window` con `preventDefault` solo en las teclas del juego y sin tecla de reinicio dentro del juego; `onStats` solo cuando cambia un valor y `onGameOver` una vez por partida; el motor se destruye en el cleanup del efecto. Un juego sin vidas/nivel muestra «—» en el HUD.
 
-Renombrado de juegos mock: al implementar un juego real se renombra su equivalente mock (CAÍDA→TETRIS, BLOQUE BUSTER→ARKANOID, SERPENTINA→SNAKE). Como `scores.game_id` referencia `games.id` sin `ON UPDATE CASCADE`, **no se hace `UPDATE` del `id`**: se inserta la fila nueva, se borra la antigua y se reajusta `sort_order` en una transacción conservando `plays`.
+Renombrado de juegos mock: al implementar un juego real se renombra su equivalente mock (CAÍDA→TETRIS, BLOQUE BUSTER→ARKANOID, SERPENTINA→SNAKE, INVASORES→INVADERS; en este último, y en SNAKE, se borraron también los seeds de la fila antigua por la cascada porque sus marcas eran inalcanzables a escala real). Como `scores.game_id` referencia `games.id` sin `ON UPDATE CASCADE`, **no se hace `UPDATE` del `id`**: se inserta la fila nueva, se borra la antigua y se reajusta `sort_order` en una transacción conservando `plays`.
 
 ### Otras carpetas
 

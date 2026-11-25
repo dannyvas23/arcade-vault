@@ -1,6 +1,6 @@
 # SPEC 09 — Juego PRISMA jugable en el Reproductor
 
-> **Estado:** Borrador
+> **Estado:** Rechazada
 > **Depende de:** SPEC 01 (Reproductor, catálogo y `ScoresProvider`), SPEC 04 (juego ROCAS), SPEC 05 (tabla de juegos y leaderboard en Supabase), SPEC 06 (juego TETRIS y registro de juegos), SPEC 08 (juego SNAKE)
 > **Fecha:** 2026-11-21
 > **Objetivo:** Crear en TypeScript un puzle de emparejar colores contra una formación de invasores que desciende (tema de la jam «INVASORES (Space Invaders)»), darlo de alta en el catálogo como PRISMA y conectarlo al HUD, los botones, el modal de guardado y el leaderboard de la plataforma mediante el registro de juegos.

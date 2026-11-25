@@ -1,6 +1,6 @@
 # SPEC 09 — Juego INVADERS jugable en el Reproductor
 
-> **Estado:** Borrador
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (Reproductor, catálogo y `ScoresProvider`), SPEC 04 (juego ROCAS), SPEC 05 (tabla de juegos y leaderboard en Supabase), SPEC 06 (juego TETRIS y registro de juegos), SPEC 07 (juego ARKANOID y patrón de renombrado), SPEC 08 (juego SNAKE)
 > **Fecha:** 2026-11-21
 > **Objetivo:** Crear en TypeScript el shooter clásico de filas de invasores (tema de la jam «INVASORES (Space Invaders)»), renombrar el juego INVASORES del catálogo a INVADERS y conectarlo al HUD, los botones, el modal de guardado y el leaderboard de la plataforma mediante el registro de juegos.

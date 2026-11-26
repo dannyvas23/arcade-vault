@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Courier_Prime, JetBrains_Mono, Press_Start_2P } from "next/font/google";
+import { AuthProvider } from "@/components/auth-provider";
 import Footer from "@/components/footer";
 import Nav from "@/components/nav";
 import { ScoresProvider } from "@/components/scores-provider";
@@ -44,11 +45,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="av-noise" />
         <div id="root">
           <SupabaseProvider>
-            <ScoresProvider>
-              <Nav />
-              <main className="av-main">{children}</main>
-              <Footer />
-            </ScoresProvider>
+            <AuthProvider>
+              <ScoresProvider>
+                <Nav />
+                <main className="av-main">{children}</main>
+                <Footer />
+              </ScoresProvider>
+            </AuthProvider>
           </SupabaseProvider>
         </div>
       </body>

@@ -25,8 +25,10 @@ export async function createClient() {
             cookieStore.set(name, value, options),
           );
         } catch {
-          // Un Server Component no puede escribir cookies. Se ignora: sin Auth
-          // aún no hay sesión que refrescar (el proxy llegará con esa spec).
+          // Un Server Component no puede escribir cookies. Se ignora: la
+          // sesión la refresca `proxy.ts` (vía `lib/supabase/proxy.ts`) en
+          // cada petición, y las Server Actions y Route Handlers sí pueden
+          // escribirlas.
         }
       },
     },

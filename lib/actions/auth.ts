@@ -2,6 +2,8 @@
 
 import type { AuthError } from "@supabase/supabase-js";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { AUTH_ERROR_MESSAGES } from "@/lib/auth/messages";
 import { normalizePlayerName } from "@/lib/auth/player-name";
 import {
   validateEmail,
@@ -138,4 +140,87 @@ export async function signUp(
   }
 
   return { ok: true, notice: "revisa-correo" };
+}
+
+function signInFailure(
+  error: AuthError,
+  values: NonNullable<Extract<AuthFormState, { ok: false }>["values"]>,
+): Extract<AuthFormState, { ok: false }> {
+  switch (error.code) {
+    case "email_not_confirmed":
+      return {
+        ok: false,
+        error: AUTH_ERROR_MESSAGES["correo-sin-confirmar"],
+        values,
+      };
+    case "invalid_credentials":
+      // El mismo mensaje exista o no la cuenta: no se revela qué correos la
+      // tienen.
+      return { ok: false, error: "CORREO O CONTRASEÑA INCORRECTOS", values };
+    case "over_request_rate_limit":
+    case "over_email_send_rate_limit":
+      return {
+        ok: false,
+        error: "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+        values,
+      };
+    default:
+      return {
+        ok: false,
+        error: "No se pudo entrar. Inténtalo de nuevo.",
+        values,
+      };
+  }
+}
+
+// Login con correo y contraseña. Éxito: `redirect("/")` (siempre a la home, sin
+// `?next=`). `redirect` lanza una excepción, así que va fuera del try/catch.
+export async function signIn(
+  _prev: AuthFormState,
+  form: FormData,
+): Promise<AuthFormState> {
+  const email = text(form.get("email")).trim();
+  const password = text(form.get("password"));
+  const values = { email };
+
+  const fields: Partial<Record<AuthFormField, string>> = {};
+  const emailError = validateEmail(email);
+  if (emailError) fields.email = emailError;
+  if (!password) fields.password = "Escribe tu contraseña.";
+
+  if (Object.keys(fields).length > 0) {
+    return { ok: false, error: "Revisa los campos marcados.", fields, values };
+  }
+
+  let failure: AuthFormState = null;
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) failure = signInFailure(error, values);
+  } catch {
+    failure = {
+      ok: false,
+      error: "No se pudo entrar. Inténtalo de nuevo.",
+      values,
+    };
+  }
+  if (failure) return failure;
+
+  redirect("/");
+}
+
+// Cierra la sesión de este navegador (`scope: "local"`: no echa al jugador de
+// sus otros dispositivos) y vuelve a la home.
+export async function signOut(): Promise<void> {
+  try {
+    const supabase = await createClient();
+    await supabase.auth.signOut({ scope: "local" });
+  } catch {
+    // Aunque falle la llamada, se vuelve a la home: el proxy refrescará o
+    // descartará la sesión en la siguiente petición.
+  }
+  redirect("/");
 }

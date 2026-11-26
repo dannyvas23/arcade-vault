@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import UserMenu from "@/components/user-menu";
 
 type Section = "inicio" | "biblioteca" | "salon" | "acerca";
 
@@ -61,6 +62,7 @@ function NavView({ pathname }: { pathname: string | null }) {
           <span className="coin"></span>
           <span>CRÉDITOS · 03</span>
         </div>
+        <UserMenu variant="bar" />
         <button
           type="button"
           className="btn ghost hamburger"
@@ -101,6 +103,7 @@ function NavView({ pathname }: { pathname: string | null }) {
           );
         })}
         <div style={{ flex: 1 }}></div>
+        <UserMenu variant="panel" onNavigate={close} />
         <div
           className="pixel"
           style={{

@@ -1,6 +1,6 @@
 # SPEC 10 — Registro, login y autenticación con Supabase Auth
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (barra de navegación y estilo neón/CRT), SPEC 03 (clientes de Supabase, `SupabaseProvider`; deja `proxy.ts` y la sesión para esta spec), SPEC 05 (`submitScore` y `scores`, que esta spec no toca)
 > **Fecha:** 2026-11-24
 > **Objetivo:** Añadir pantallas de registro, login (email y contraseña, Google y GitHub), confirmación de correo y recuperación de contraseña con Supabase Auth, mostrando la sesión en la barra de navegación y sin vincular todavía las puntuaciones al usuario.

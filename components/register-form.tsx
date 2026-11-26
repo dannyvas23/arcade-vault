@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { AuthAlert, AuthField, AuthHeader } from "@/components/auth-ui";
+import OAuthButtons from "@/components/oauth-buttons";
 import { signUp, type AuthFormState } from "@/lib/actions/auth";
 import {
   EMAIL_MAX,
@@ -112,6 +113,8 @@ export default function RegisterForm() {
           {pending ? "CREANDO CUENTA…" : "CREAR CUENTA"}
         </button>
       </form>
+
+      <OAuthButtons />
 
       <div className="auth-links">
         <span>¿YA TIENES CUENTA?</span>

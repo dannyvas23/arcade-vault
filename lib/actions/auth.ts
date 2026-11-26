@@ -356,3 +356,32 @@ export async function updatePassword(
 
   redirect("/");
 }
+
+const OAUTH_PROVIDERS = ["google", "github"] as const;
+export type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+
+// Empieza el flujo OAuth en el servidor para que el verificador PKCE quede en
+// cookies del servidor y `/auth/callback` (mismo origen) pueda cerrarlo.
+// El proveedor llega del navegador: se valida en runtime. Si algo falla se
+// vuelve a `/login` con un código cerrado. `redirect` lanza una excepción, así
+// que va fuera del try/catch.
+export async function signInWithProvider(provider: OAuthProvider): Promise<void> {
+  if (!OAUTH_PROVIDERS.includes(provider)) {
+    redirect("/login?error=oauth-fallo");
+  }
+
+  let url: string | null = null;
+  try {
+    const supabase = await createClient();
+    const origin = await getOrigin();
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${origin}/auth/callback` },
+    });
+    if (!error) url = data.url;
+  } catch {
+    url = null;
+  }
+
+  redirect(url ?? "/login?error=oauth-fallo");
+}

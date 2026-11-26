@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense, useActionState } from "react";
 import AuthUrlError from "@/components/auth-url-error";
 import { AuthAlert, AuthField, AuthHeader } from "@/components/auth-ui";
+import OAuthButtons from "@/components/oauth-buttons";
 import { signIn, type AuthFormState } from "@/lib/actions/auth";
 import { EMAIL_MAX, PASSWORD_MAX } from "@/lib/auth/validation";
 
@@ -61,6 +62,8 @@ export default function LoginForm() {
           {pending ? "ENTRANDO…" : "ENTRAR AL VAULT"}
         </button>
       </form>
+
+      <OAuthButtons />
 
       <div className="auth-links">
         <Link href="/recuperar">¿OLVIDASTE TU CONTRASEÑA?</Link>

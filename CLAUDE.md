@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**Arcade Vault** es una plataforma para jugar online y competir por la mayor cantidad de puntos (ver `README.md`). Catálogo de 8 juegos, Reproductor con marco CRT, Salón de la Fama y rankings por juego guardados en Supabase. No hay Auth todavía (el jugador es «INVITADO» y teclea sus iniciales al guardar) ni página «Acerca de».
+**Arcade Vault** es una plataforma para jugar online y competir por la mayor cantidad de puntos (ver `README.md`). Catálogo de 8 juegos, Reproductor con marco CRT, Salón de la Fama y rankings por juego guardados en Supabase. Hay **Auth con Supabase** (registro, login con email, Google y GitHub, recuperación de contraseña; SPEC 10), pero las puntuaciones **aún no se vinculan al usuario**: el jugador sigue siendo «INVITADO» y teclea sus iniciales al guardar, con o sin sesión. No hay página «Acerca de».
 
 Estado de los juegos: **5 tienen motor real** (ROCAS, TETRIS, ARKANOID, SNAKE, INVADERS, registrados en `components/game-registry.ts`); los otros 3 del catálogo (GLOTÓN, RANARIA, DUELO PIXEL) siguen con la **simulación** del Reproductor (la puntuación sube sola sobre `.game-arena`).
 
@@ -17,7 +17,7 @@ Conversación y mensajes de commit en español.
 El proyecto sigue **Spec Driven Design** con las skills `/spec` y `/spec-impl` de `Klerith/fernando-skills` (`npx skills@latest add Klerith/fernando-skills`, fijadas en `skills-lock.json`) más una skill propia, `/spec-juego`.
 
 - Specs numeradas en `specs/NN-slug.md`; cada una tiene cabecera `Estado` (Borrador/Aprobado/Implementado), `Depende de`, `Fecha` y `Objetivo`. Se **commitea primero la spec** y luego la implementación en una rama `spec-NN-slug` (`specs/.spec-config.yml` → `AutoCreateBranch: true`, `/spec-impl` crea la rama sin preguntar). Cada spec entra a `main` mediante un PR.
-- Specs existentes: 01 pantallas MVP visual · 02 home landing · 03 integración Supabase · 04 juego ROCAS · 05 tabla de juegos y leaderboard · 06 juego TETRIS · 07 juego ARKANOID · 08 juego SNAKE · 09 juego INVADERS (salió de la game jam «invasores», variante A; la variante B `prisma` quedó «Rechazada» en `specs/game-jam/invasores/`). La siguiente es la 10. Al terminar una spec, pasa su estado a «Implementado».
+- Specs existentes: 01 pantallas MVP visual · 02 home landing · 03 integración Supabase · 04 juego ROCAS · 05 tabla de juegos y leaderboard · 06 juego TETRIS · 07 juego ARKANOID · 08 juego SNAKE · 09 juego INVADERS (salió de la game jam «invasores», variante A; la variante B `prisma` quedó «Rechazada» en `specs/game-jam/invasores/`) · 10 auth: registro, login y recuperación con Supabase Auth. La siguiente es la 11 (la lógica natural es vincular `scores` al usuario). Al terminar una spec, pasa su estado a «Implementado».
 - Los commits recientes usan el prefijo `feat:` en inglés (p. ej. `feat: add Snake game …`); los anteriores usaban frases en español. Sigue el estilo de los commits más recientes.
 
 ## Skills
@@ -59,6 +59,9 @@ El proyecto sigue **Spec Driven Design** con las skills `/spec` y `/spec-impl` d
 | `/juegos/[id]` | Detalle del juego + ranking. `generateStaticParams` sale de la BD. |
 | `/juegos/[id]/jugar` | Reproductor (`components/game-player.tsx`). |
 | `/salon` | Salón de la Fama. |
+| `/registro`, `/login`, `/recuperar` | Pantallas de acceso (formularios en `components/{register,login,recover}-form.tsx`). Con sesión, `proxy.ts` las redirige a `/`. |
+| `/restablecer` | Fijar la contraseña nueva. Solo con la sesión de recuperación; sin sesión `proxy.ts` redirige a `/recuperar`. |
+| `/auth/confirm`, `/auth/recovery`, `/auth/callback` | Route handlers `GET` que intercambian el `code` por sesión (alta por email, recuperación y OAuth) y redirigen; los fallos van a `/login?error=<codigo>`. |
 
 ### Supabase
 
@@ -66,7 +69,13 @@ El proyecto sigue **Spec Driven Design** con las skills `/spec` y `/spec-impl` d
 - Clientes: `lib/supabase/client.ts` (navegador, expuesto vía `SupabaseProvider`/`useSupabase`), `server.ts` (con cookies, para acciones) y `public.ts` (sin cookies, obligatorio dentro de `"use cache"`). Tipos generados en `lib/supabase/database.types.ts`; regénéralos solo si cambia el esquema.
 - Tablas: `games` (catálogo; `sort_order` único, CHECK en `category` y `color`), `scores` (`player_name` 1–10 caracteres, `score >= 0`) y la vista `games_catalog` (`games` + `best = MAX(score)`). El trigger `bump_game_plays()` suma 1 a `plays` por cada fila insertada en `scores`. RLS: lectura pública e inserción pública en `scores`. No hay carpeta `supabase/`: los cambios de esquema/datos se aplican con `apply_migration` del MCP.
 - Capa de lectura: `lib/data/games.ts` (`getGames`, `getGame`, etiqueta `games`) y `lib/data/scores.ts` (`getTopScores`, etiqueta `scores:<gameId>`; devuelve `null` si falla para mostrar estado de error). Escritura: `lib/actions/scores.ts` (`submitScore`, server action que invalida las etiquetas con `updateTag`). Un juego recién insertado puede dar «no encontrado» hasta que expire la caché o se invalide `games`.
-- Guardado de puntuaciones: `ScoresProvider` (`components/scores-provider.tsx`) escribe siempre en `localStorage` (`av:v1:scores`, `lib/storage.ts`, fuente de «TU MEJOR MARCA») y además en Supabase; si falla la acción, el modal indica «GUARDADA SOLO EN ESTE DISPOSITIVO». No hay sincronización posterior.
+- Guardado de puntuaciones: `ScoresProvider` (`components/scores-provider.tsx`) escribe siempre en `localStorage` (`av:v1:scores`, `lib/storage.ts`, fuente de «TU MEJOR MARCA») y además en Supabase; si falla la acción, el modal indica «GUARDADA SOLO EN ESTE DISPOSITIVO». No hay sincronización posterior. Ni este flujo ni `submitScore` conocen al usuario con sesión.
+- **Auth (SPEC 10):** Supabase Auth con email y contraseña, Google y GitHub; «Confirm email» activado y plantillas de correo **por defecto** (editarlas exige SMTP propio), por eso los enlaces usan el flujo **PKCE** (`code` + `exchangeCodeForSession`) y solo valen en el navegador donde se pidieron. No hay tablas nuevas: el nombre del jugador vive en `user_metadata.player_name`.
+  - `proxy.ts` (raíz; en Next 16 `middleware` se llama `proxy`) + `lib/supabase/proxy.ts`: refresca la sesión con `getClaims()` (nunca `getSession()` para decidir acceso) y solo redirige las pantallas de acceso; la plataforma sigue abierta a invitados.
+  - Las acciones de `lib/actions/auth.ts` (`signUp`, `signIn`, `signOut`, `requestPasswordReset`, `updatePassword`, `signInWithProvider`) corren en el servidor: las cookies de sesión y el verificador PKCE se escriben ahí. La validación del servidor (`lib/auth/validation.ts`) es la que manda. Los errores de enlace viajan como códigos cerrados (`?error=`, `lib/auth/messages.ts`); nunca se pinta texto recibido por URL.
+  - `components/auth-provider.tsx` (`useAuth()`, `useAuthSync()`) solo pinta la interfaz (nav: `ACCEDER` o nombre + `SALIR`): ninguna decisión de acceso se toma con él. Como las acciones de servidor redirigen sin recargar, el provider relee la sesión al cambiar la ruta y al terminar `SALIR`. `app/layout.tsx` no lee `cookies()`, para que el resto de rutas siga prerenderizándose.
+  - `getPlayerName(user)` (`lib/auth/player-name.ts`) devuelve el nombre a mostrar: `player_name`, o el del proveedor OAuth, o la parte local del email, saneado a `[A-Z0-9 _-]` y 10 caracteres. `user_metadata` lo puede editar el propio usuario: no usarlo en reglas de acceso ni RLS.
+  - Configuración manual (el MCP no puede hacerla): Site URL, Redirect URLs (`/auth/confirm`, `/auth/recovery`, `/auth/callback`), «Confirm email» y los proveedores OAuth, en el panel de Supabase (ver `README.md`). El SMTP por defecto de Supabase solo entrega a direcciones del equipo y con pocos envíos por hora: para abrir la plataforma hace falta SMTP propio. No hay variables de entorno nuevas.
 
 ### Juegos y registro
 

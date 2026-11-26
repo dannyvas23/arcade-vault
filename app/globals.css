@@ -874,6 +874,7 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--magenta);
   box-shadow: 0 0 14px rgba(255,0,110,0.25);
 }
+.auth-lead { margin: 0 0 16px; font-size: 12px; line-height: 1.6; color: var(--ink-dim); }
 .auth-submit { width: 100%; margin-top: 8px; }
 .auth-submit:disabled { opacity: 0.55; cursor: progress; pointer-events: none; }
 .auth-links {
@@ -901,16 +902,16 @@ a { color: inherit; text-decoration: none; }
 .auth-caret { animation: blink 1s steps(1, end) infinite; }
 
 /* sesión en la nav: nombre del jugador + SALIR / ACCEDER */
-.auth-slot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
-.auth-slot.bar { width: 210px; flex: none; } /* ancho fijo: el diseño no salta al resolverse la sesión */
+.auth-slot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.auth-slot.bar { width: 176px; flex: none; } /* ancho fijo: el diseño no salta al resolverse la sesión */
 .auth-user {
   display: inline-flex; align-items: center; gap: 8px; min-width: 0;
-  font-family: var(--pixel); font-size: 9px; letter-spacing: 0.1em; color: var(--green);
+  font-family: var(--pixel); font-size: 8px; letter-spacing: 0.08em; color: var(--green);
   text-shadow: 0 0 6px rgba(0,255,136,0.5);
   white-space: nowrap;
 }
 .auth-dot { flex: none; width: 7px; height: 7px; background: var(--green); box-shadow: 0 0 8px var(--green); }
-.auth-signout { padding: 9px 12px; font-size: 8px; }
+.auth-signout { padding: 9px 10px; font-size: 8px; }
 .auth-signout:disabled { opacity: 0.55; cursor: progress; pointer-events: none; }
 .av-nav .auth-slot .auth-btn { margin-left: 0; padding: 10px 16px; font-size: 9px; }
 .av-nav .auth-slot .btn:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; }
@@ -919,6 +920,9 @@ a { color: inherit; text-decoration: none; }
 .auth-slot.panel form { display: flex; }
 .auth-slot.panel .btn { flex: 1; padding: 12px; font-size: 10px; }
 .av-mobile-panel .auth-slot a.btn { border: 1px solid var(--cyan); color: var(--ink); justify-content: center; }
+@media (max-width: 1259px) {
+  .av-nav .coin-counter { display: none; } /* decorativo: cede el sitio a la sesión */
+}
 @media (max-width: 840px) {
   .auth-slot.bar { display: none; } /* en móvil la sesión vive en el panel */
 }

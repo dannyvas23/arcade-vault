@@ -224,3 +224,135 @@ export async function signOut(): Promise<void> {
   }
   redirect("/");
 }
+
+// Pide el correo de recuperación. Responde siempre igual («ENLACE ENVIADO»)
+// exista o no la cuenta: Supabase no distingue y aquí tampoco. Solo se
+// muestran los errores que no revelan nada de la cuenta (límite de envíos,
+// correo no autorizado por el SMTP de pruebas, fallo genérico).
+export async function requestPasswordReset(
+  _prev: AuthFormState,
+  form: FormData,
+): Promise<AuthFormState> {
+  const email = text(form.get("email")).trim();
+  const values = { email };
+
+  const emailError = validateEmail(email);
+  if (emailError) {
+    return {
+      ok: false,
+      error: "Revisa los campos marcados.",
+      fields: { email: emailError },
+      values,
+    };
+  }
+
+  try {
+    const supabase = await createClient();
+    const origin = await getOrigin();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/auth/recovery`,
+    });
+    if (error) {
+      switch (error.code) {
+        case "over_email_send_rate_limit":
+        case "over_request_rate_limit":
+          return {
+            ok: false,
+            error:
+              "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+            values,
+          };
+        case "email_address_not_authorized":
+          return {
+            ok: false,
+            error:
+              "Este correo aún no puede recibir mensajes de la plataforma. Prueba con otro.",
+            fields: { email: "Este correo no está autorizado todavía." },
+            values,
+          };
+        default:
+          return {
+            ok: false,
+            error: "No se pudo enviar el enlace. Inténtalo de nuevo.",
+            values,
+          };
+      }
+    }
+  } catch {
+    return {
+      ok: false,
+      error: "No se pudo enviar el enlace. Inténtalo de nuevo.",
+      values,
+    };
+  }
+
+  return { ok: true, notice: "enlace-enviado" };
+}
+
+// Fija la contraseña nueva con la sesión de recuperación que abrió el enlace
+// del correo. Éxito: `redirect("/")` con la sesión abierta.
+export async function updatePassword(
+  _prev: AuthFormState,
+  form: FormData,
+): Promise<AuthFormState> {
+  const password = text(form.get("password"));
+  const confirm = text(form.get("confirm"));
+
+  const fields: Partial<Record<AuthFormField, string>> = {};
+  const passwordError = validatePassword(password);
+  if (passwordError) fields.password = passwordError;
+  else if (password !== confirm) fields.confirm = "Las contraseñas no coinciden.";
+
+  if (Object.keys(fields).length > 0) {
+    return { ok: false, error: "Revisa los campos marcados.", fields };
+  }
+
+  let failure: AuthFormState = null;
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) {
+      switch (error.code) {
+        case "same_password":
+          failure = {
+            ok: false,
+            error: "Revisa los campos marcados.",
+            fields: {
+              password: "La contraseña nueva debe ser distinta de la anterior.",
+            },
+          };
+          break;
+        case "weak_password":
+          failure = {
+            ok: false,
+            error: "Revisa los campos marcados.",
+            fields: { password: "Esa contraseña es demasiado débil." },
+          };
+          break;
+        case "session_not_found":
+        case "session_expired":
+        case "bad_jwt":
+        case "no_authorization":
+          failure = {
+            ok: false,
+            error: "TU ENLACE HA CADUCADO. PIDE UNO NUEVO DESDE «RECUPERAR».",
+          };
+          break;
+        default:
+          failure = {
+            ok: false,
+            error: "No se pudo guardar la contraseña. Inténtalo de nuevo.",
+          };
+      }
+    }
+  } catch {
+    // `updateUser` sin sesión lanza AuthSessionMissingError.
+    failure = {
+      ok: false,
+      error: "TU ENLACE HA CADUCADO. PIDE UNO NUEVO DESDE «RECUPERAR».",
+    };
+  }
+  if (failure) return failure;
+
+  redirect("/");
+}
